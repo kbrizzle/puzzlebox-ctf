@@ -11,10 +11,11 @@ src = 'ref'
 out = 'out_ref'
 libs = ['lib']
 optimizer = true
-optimizer_runs = 1000000
+optimizer_runs = 0
 via_ir=true
 cbor_metadata=false
 bytecodeHash="none"
 ignored_error_codes=[3628, 5159]
+optimizerSteps="dhfoDgvulfnTUtnIf [xa[r]scLM cCTUtTOntnfDIul Lcul Vcul [j] Tpeul xa[rul] xa[r]cL gvif CTUca[r]LsTOtfDnca[r]Iulc] jmul[jul] VcTOcul jmul"
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

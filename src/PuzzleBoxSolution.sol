@@ -5,60 +5,49 @@ import "./PuzzleBox.sol";
 
 contract PuzzleBoxSolution {
     function solve(PuzzleBox puzzle) external {
-        // operate & drip & unlock
-        _drip(puzzle);
+        /* operate & drip & unlock */
 
-        // creep
-        puzzle.creep{gas: 96_032}();
-
-        // zip
-        _zip(puzzle);
-
-        // torch
-        _torch(puzzle);
-
-        // spread
-        _spread(puzzle);
-
-        // open
-        _open(puzzle);
-    }
-
-    function _drip(PuzzleBox puzzle) private {
+        // address(new Dripper(puzzle)).call("");
         address dripper;
         bytes memory initCode = // Dripper compiled w/ optimizer w/o metadata
-            hex"60c0604081815234610163576000916020816102ce8038038091610023828561"
-            hex"0168565b83398101031261014757516001600160a01b03808216918281036101"
-            hex"5f576080526002820181811161014b571660a052803b15610147578151630e2b"
-            hex"34c360e31b8152838160048183865af1801561013a5761010f575b5091806044"
-            hex"8394828095519167deecedd4925facb160c01b83528160208401528188840152"
-            hex"5af1503d15610109573d906001600160401b0382116100f5578251916100cf60"
-            hex"1f8201601f191660200184610168565b825260203d92013e5b5161012c908161"
-            hex"01a28239608051816052015260a0518160d10152f35b634e487b7160e01b8152"
-            hex"6041600452602490fd5b506100d8565b6001600160401b038111610126578252"
-            hex"604461007a565b634e487b7160e01b84526041600452602484fd5b5050505190"
-            hex"3d90823e3d90fd5b8280fd5b634e487b7160e01b85526011600452602485fd5b"
-            hex"8480fd5b600080fd5b601f909101601f19168101906001600160401b03821190"
-            hex"82101761018b57604052565b634e487b7160e01b600052604160045260246000"
-            hex"fdfe6080806040526000806004341593848314610126576103e85b7f9f678cca"
-            hex"00000000000000000000000000000000000000000000000000000000825273ff"
-            hex"ffffffffffffffffffffffffffffffffffffff7f000000000000000000000000"
-            hex"0000000000000000000000000000000000000000165af1503d15610121573d67"
-            hex"ffffffffffffffff8082116100f257601f603f604051937fffffffffffffffff"
-            hex"ffffffffffffffffffffffffffffffffffffffffffffffe09283910116011682"
-            hex"019182109111176100f2575b6100cf57005b7f00000000000000000000000000"
-            hex"00000000000000000000000000000000000000ff5b7f4e487b71000000000000"
-            hex"0000000000000000000000000000000000000000000060005260416004526024"
-            hex"6000fd5b6100c9565b3461001856000000000000000000000000000000000000"
-            hex"0000000000000000000000000000"; // padding for puzzle address overwrite
+        hex"60c06040818152600091602081610242803803809161001e8285610142565b83"
+        hex"398101031261013a57516001600160a01b038082169182810361013e57608052"
+        hex"600282011660a052803b1561013a578151630e2b34c360e31b81528381600481"
+        hex"83865af1801561012d57610102575b50918060448394828095519167deecedd4"
+        hex"925facb160c01b835281602084015281888401525af1503d156100fc573d9060"
+        hex"01600160401b0382116100e8578251916100c3601f8201601f19166020018461"
+        hex"0142565b825260203d92013e5b5160c6908161017c8239608051816023015260"
+        hex"a0518160860152f35b634e487b7160e01b81526041600452602490fd5b506100"
+        hex"cc565b6001600160401b038111610119578252604461006e565b634e487b7160"
+        hex"e01b84526041600452602484fd5b50505051903d90823e3d90fd5b8280fd5b84"
+        hex"80fd5b601f909101601f19168101906001600160401b03821190821017610165"
+        hex"57604052565b634e487b7160e01b600052604160045260246000fdfe60808060"
+        hex"4052600080600434159384831460c1576103e85b634fb3c66560e11b82527f00"
+        hex"0000000000000000000000000000000000000000000000000000000000000060"
+        hex"01600160a01b03165af1503d1560bd573d6001600160401b0380821160a75760"
+        hex"1f603f60405193821992839101160116820191821091111760a7575b60845700"
+        hex"5b7f000000000000000000000000000000000000000000000000000000000000"
+        hex"0000ff5b634e487b7160e01b600052604160045260246000fd5b607f565b3460"
+        hex"1756000000000000000000000000000000000000000000000000000000000000"
+        hex"0000"; // padding for puzzle address overwrite
         assembly {
             mstore(add(initCode, mload(initCode)), puzzle)
             dripper := create(0, add(initCode, 0x20), mload(initCode))
         }
         dripper.call("");
-    }
 
-    function _torch(PuzzleBox puzzle) private {
+        /* creep */
+
+        puzzle.creep{gas: 96_032}();
+
+        /* zip */
+
+        puzzle.leak();
+        puzzle.zip();
+
+        /* torch */
+
+        // puzzle.torch([6, 2, 4, 7, 8, 9]);
         address(puzzle).call(
             hex"925facb1"
             hex"0000000000000000000000000000000000000000000000000000000000000001"
@@ -72,14 +61,13 @@ contract PuzzleBoxSolution {
             hex"0000000000000000000000000000000000000000000000000000000000000008"
             hex"0000000000000000000000000000000000000000000000000000000000000009"
         );
-    }
 
-    function _spread(PuzzleBox puzzle) private {
+        /* spread */
+
         // puzzle.spread(
         //     [0x416e59DaCfDb5D457304115bBFb9089531D873B7],
         //     [0xC817dD2a5daA8f790677e399170c92AabD044b57, 0.0150e4, 0.0075e4]
         // );
-
         address(puzzle).call(
             hex"2b071e47"
             hex"0000000000000000000000000000000000000000000000000000000000000040"
@@ -91,21 +79,15 @@ contract PuzzleBoxSolution {
             hex"0000000000000000000000000000000000000000000000000000000000000096"
             hex"000000000000000000000000000000000000000000000000000000000000004b"
         );
-    }
 
-    function _zip(PuzzleBox puzzle) private {
-        puzzle.leak();
-        puzzle.zip();
-    }
+        /* open */
 
-    function _open(PuzzleBox puzzle) private {
         // order = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
         // r = 0xc8f549a7e4cb7e1c60d908cc05ceff53ad731e6ea0736edf7ffeea588dfb42d8
         // s = 0x625cb970c2768fefafc3512a3ad9764560b330dcafe02714654fe48dd069b6df
         // v = 0x1c
         // s2 = 0x9da3468f3d897010503caed5c52689b959fbac09ff6879275a8279feffcc8a62 = (order - s)
         // v2 = 0x1b = 27 + (28 - v)
-
         puzzle.open(
             0xc8f549a7e4cb7e1c60d908cc05ceff53ad731e6ea0736edf7ffeea588dfb42d8,
             (
@@ -121,24 +103,28 @@ contract Dripper {
     PuzzleBox private immutable _puzzle;
     address payable private immutable _target;
 
-    constructor(PuzzleBox puzzle) {
-        _puzzle = puzzle;
-        _target = payable(address(uint160(address(_puzzle)) + 2));
+    constructor(PuzzleBox puzzle) payable {
+        unchecked {
+            _puzzle = puzzle;
+            _target = payable(address(uint160(address(_puzzle)) + 2));
 
-        // operate drip
-        puzzle.operate();
+            // operate drip
+            puzzle.operate();
 
-        // unlock torch
-        address(puzzle).call( // puzzle.lock(PuzzleBox.torch.selector, false);
-            hex"deecedd4"
-            hex"925facb100000000000000000000000000000000000000000000000000000000"
-            hex"0000000000000000000000000000000000000000000000000000000000000000"
-        ); // ??? wtf
+            // unlock torch
+            address(puzzle).call( // puzzle.lock(PuzzleBox.torch.selector, false);
+                hex"deecedd4"
+                hex"925facb100000000000000000000000000000000000000000000000000000000"
+                hex"0000000000000000000000000000000000000000000000000000000000000000"
+            ); // ??? wtf
+        }
     }
 
     fallback() external payable {
-        // puzzle.drip{value: msg.value == 0 ? 1000 : msg.value}();
-        address(_puzzle).call{value: msg.value == 0 ? 1000 : msg.value}(hex"9f678cca");
-        if (msg.value == 0) selfdestruct(_target);
+        unchecked {
+            // puzzle.drip{value: msg.value == 0 ? 1000 : msg.value}();
+            address(_puzzle).call{value: msg.value == 0 ? 1000 : msg.value}(hex"9f678cca");
+            if (msg.value == 0) selfdestruct(_target);
+        }
     }
 }
