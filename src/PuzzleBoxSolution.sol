@@ -84,9 +84,6 @@ contract PuzzleBoxSolution {
 }
 
 contract Dripper {
-    uint256 private constant DRIP_FEE_WITH_EXCESS = 101; // 100 + 1
-    uint256 private constant STOPPING_BALANCE = 337;     // 1337 - 10 * 100
-
     PuzzleBox private immutable _puzzle;
 
     constructor(PuzzleBox puzzle) {
@@ -100,13 +97,13 @@ contract Dripper {
     }
 
     function drip() public {
-        _puzzle.drip{value: DRIP_FEE_WITH_EXCESS}();
+        _puzzle.drip{value: 1000}();
 
         // create and warm zip target address
-        payable(address(uint160(address(_puzzle)) + 2)).transfer(1);
+        selfdestruct(payable(address(uint160(address(_puzzle)) + 2)));
     }
 
     receive() external payable {
-        if (address(this).balance > STOPPING_BALANCE) _puzzle.drip{value: DRIP_FEE_WITH_EXCESS}();
+        _puzzle.drip{value: msg.value}();
     }
 }
